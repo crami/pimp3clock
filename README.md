@@ -1,6 +1,8 @@
 pimp3clock.py
 =============
 
+![pimp3clock Image](pimp3clock.jpg)
+
 pimp3clock is a simple MP3 Player/Clock for the Raspberry PI with an
 Adafrut i2c 16x2 RGB LCP Plate (http://www.adafruit.com/products/716)
 attached.
