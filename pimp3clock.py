@@ -8,6 +8,7 @@ from mpd import *
 import threading
 import signal
 import sys
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 PLAY=0
 PAUSE=1
@@ -16,8 +17,30 @@ VOL=3
 
 lcd = Adafruit_CharLCDPlate()
 client = MPDClient()           # create client object
-
+server = HTTPServer(('',80), pimp3clock_HTTPRequesthandler)
 lock = threading.Lock()
+
+class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
+  def do_GET(self):
+    try:
+      self.send_response(200)
+      self.send_header('Content-type',	'text/html')
+      self.end_headers()
+      
+      self.wfile.write("hey, today is the" + str(time.localtime()[7]))
+      self.wfile.write(" day in the year " + str(time.localtime()[0]))
+      return
+    
+    return
+    
+    except IOError:
+      self.send_error(404,'File Not Found: %s' % self.path)
+      
+  def do_POST(self):
+  try:
+  except:
+    pass
+  
 
 def display_lcd(title_a,st_a,vol_a):
 
@@ -114,6 +137,9 @@ def display_lcd(title_a,st_a,vol_a):
     t=t+1
     sleep(0.5)
  
+def webserver():
+  server.serve_forever()
+
 def main_loop():
   i=0;
   title_a=[None]
@@ -127,6 +153,10 @@ def main_loop():
   display_thread = threading.Thread(target=display_lcd, args=(title_a,st_a,vol_a))
   display_thread.daemon=True  # Causing thread to stop when main process ends.
   display_thread.start()
+
+  webserver_thread = threading.Thread(target=webserver, args=())
+  webserver_thread.daemon=True  # Causing thread to stop when main process ends.
+  webserver_thread.start()
 
   client.connect("localhost", 6600)  # connect to localhost:6600
 
