@@ -27,7 +27,7 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
     try:
       if '?' in self.path:
         self.path,q = self.path.split('?', 1)
-      if self.path.endswith(".js") or self.path.endswith(".css") or self.path.endswith(".png") or self.path.endswith(".html"):
+      if self.path.endswith(".js") or self.path.endswith(".css") or self.path.endswith(".png") or self.path.endswith(".gif") or self.path.endswith(".html"):
         f = open(curdir + "/web/" + self.path)
         self.send_response(200)
         if self.path.endswith(".js"):
@@ -36,6 +36,8 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
           self.send_header('Content-type', 'text/css')
         elif self.path.endswith(".png"):
           self.send_header('Content-type', 'image/png')
+        elif self.path.endswith(".gif"):
+          self.send_header('Content-type', 'image/gif')
         elif self.path.endswith(".html"):
           self.send_header('Content-type', 'text/html')
         
