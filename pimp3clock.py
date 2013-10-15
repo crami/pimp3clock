@@ -8,7 +8,9 @@ from mpd import *
 import threading
 import signal
 import sys
+from os import curdir
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import json
 
 PLAY=0
 PAUSE=1
@@ -23,16 +25,80 @@ lock = threading.Lock()
 class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
   def do_GET(self):
     try:
-      self.send_response(200)
-      self.send_header('Content-type',	'text/html')
-      self.end_headers()
-      
-      song = client.currentsong()
-      if song == {}:
-        title=""
+      if '?' in self.path:
+        self.path,q = self.path.split('?', 1)
+      if self.path.endswith(".js") or self.path.endswith(".css") or self.path.endswith(".png") or self.path.endswith(".html"):
+        f = open(curdir + "/web/" + self.path)
+        self.send_response(200)
+        if self.path.endswith(".js"):
+          self.send_header('Content-type', 'text/javascript')
+        elif self.path.endswith(".css"):
+          self.send_header('Content-type', 'text/css')
+        elif self.path.endswith(".png"):
+          self.send_header('Content-type', 'image/png')
+        elif self.path.endswith(".html"):
+          self.send_header('Content-type', 'text/html')
+        
+        self.end_headers()
+        self.wfile.write(f.read())
+        f.close()
+        return
+      elif self.path.endswith(".json"):
+        self.send_response(200)
+        self.send_header('Content-type',        'text/javascript')
+        self.end_headers()
+        if self.path.endswith("status.json"):
+          lock.acquire()
+          song = client.currentsong()
+          status = client.status() 
+          lock.release()
+          self.wfile.write(json.dumps({'song': song, 'status': status}))
+          return
+        elif self.path.endswith("select.json"):
+          lock.acquire()
+          status = client.status()
+          if status['state'] == "stop":
+            client.play()
+          elif status['state'] == "play":  
+            client.pause(1)
+          elif status['state'] == "pause":
+            client.pause(0)
+          lock.release()
+                                                             
+          self.wfile.write(json.dumps("OK"))
+          return
+        elif self.path.endswith("next.json"):
+          lock.acquire()
+          client.next()
+          lock.release()
+                                                             
+          self.wfile.write(json.dumps("OK"))
+          return
+        elif self.path.endswith("previous.json"):
+          lock.acquire()
+          client.previous()
+          lock.release()
+                                                             
+          self.wfile.write(json.dumps("OK"))
+          return
+        elif self.path.endswith("volume.json"):
+         key, value = q.split('=',1)
+         if (value < 1):
+           value=1
+         lock.acquire()
+         client.setvol(value)
+         lock.release()   
+                                                                   
+         self.wfile.write(json.dumps("OK"))
+         return
+                                                                                       
+        return
+        
       else:
-        title=song['artist'] + " - " + song['title']      
-      self.wfile.write("Currently playing: %s" % title)
+        self.send_response(301)
+        self.send_header('Location',	'index.html')
+        self.end_headers()
+        return
       return
     
     except IOError:
@@ -95,7 +161,7 @@ def display_lcd(title_a,st_a,vol_a):
 
   while 1:
     lock.acquire()
-    vol=[None]
+    vol=[]
 
     vol.append([0b00000,0b00000,0b00000,0b00000,0b00000,0b00000,0b00000,0b00000])
     vol.append([0b00000,0b00000,0b00000,0b00000,0b00000,0b00000,0b10000,0b10000])
@@ -104,7 +170,8 @@ def display_lcd(title_a,st_a,vol_a):
     vol.append([0b00000,0b00000,0b00000,0b00010,0b00110,0b01110,0b11110,0b11110])
     vol.append([0b00000,0b00000,0b00001,0b00011,0b00111,0b01111,0b11111,0b11111])
     
-    lcd.createChar(VOL,vol[int((vol_a[0]+5)/(100/6))])  
+    volbar=int((vol_a[0]+5)/(100/5))
+    lcd.createChar(VOL,vol[volbar])  
 
     try:
       if (t % 2) == 0:
@@ -151,7 +218,7 @@ def main_loop():
   
   title_a[0]=""
   st_a[0]=STOP
-  vol_a[0]=100
+  vol_a[0]=0
 
   display_thread = threading.Thread(target=display_lcd, args=(title_a,st_a,vol_a))
   display_thread.daemon=True  # Causing thread to stop when main process ends.
@@ -177,10 +244,14 @@ def main_loop():
   last_button=100;
 
   while 1:
+        lock.acquire()
         status = client.status()
         vol_a[0]=int(status['volume'])
+        lock.release()
         if (i % 5) == 0:
+          lock.acquire()
           song = client.currentsong()
+          lock.release()
           if song == {}:
             title_a[0]=""
           else:
@@ -200,21 +271,32 @@ def main_loop():
           
         if ((button & 1) == 1) and (last_button != button): # SELECT
            if status['state'] == "stop":
+             lock.acquire()
              client.play()
+             lock.release()
            elif status['state'] == "play":
+             lock.acquire()
              client.pause(1)
            elif status['state'] == "pause":
+             lock.acquire()
              client.pause(0)
+             lock.release()
         elif ((button & 2) == 2) and (last_button != button):  # RIGHT
           client.next()
         elif (button & 4) == 4:  # DOWN
-          if int(status['volume']) >0:
+          if int(status['volume']) >1:
+            lock.acquire()
             client.setvol(int(status['volume']) - 1)
+            lock.release()
         elif (button & 8) == 8:  # UP
           if int(status['volume']) <100:
+            lock.acquire()
             client.setvol(int(status['volume']) + 1)
+            lock.release()
         elif ((button & 16) == 16) and (last_button != button):  # LEFT
+          lock.acquire()
           client.previous()
+          lock.release()
 
         last_button=button
 
