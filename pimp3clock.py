@@ -17,7 +17,7 @@ VOL=3
 
 lcd = Adafruit_CharLCDPlate()
 client = MPDClient()           # create client object
-server = HTTPServer(('',80), pimp3clock_HTTPRequesthandler)
+
 lock = threading.Lock()
 
 class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
@@ -27,19 +27,22 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
       self.send_header('Content-type',	'text/html')
       self.end_headers()
       
-      self.wfile.write("hey, today is the" + str(time.localtime()[7]))
-      self.wfile.write(" day in the year " + str(time.localtime()[0]))
+      song = client.currentsong()
+      if song == {}:
+        title=""
+      else:
+        title=song['artist'] + " - " + song['title']      
+      self.wfile.write("Currently playing: %s" % title)
       return
-    
-    return
     
     except IOError:
       self.send_error(404,'File Not Found: %s' % self.path)
       
   def do_POST(self):
-  try:
-  except:
-    pass
+    try:
+      print "POST"
+    except:
+      pass
   
 
 def display_lcd(title_a,st_a,vol_a):
@@ -234,6 +237,7 @@ try:
   for sig in [signal.SIGTERM, signal.SIGINT, signal.SIGHUP, signal.SIGQUIT]:
     signal.signal(sig, sig_handler)
     
+  server = HTTPServer(('',80), pimp3clock_HTTPRequesthandler)
   main_loop()
 except (KeyboardInterrupt, SystemExit):
   shutdown()
