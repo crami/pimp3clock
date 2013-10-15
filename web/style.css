@@ -1,4 +1,8 @@
 
 .label {
-  width: 5em !important;
+  width: 20% !important;
+}
+
+.value {
+  width: 80% !important;
 }
