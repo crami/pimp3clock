@@ -6,3 +6,22 @@
 .value {
   width: 80% !important;
 }
+
+.playpause {
+  background:url(image/pause_play_stop_black.png) no-repeat 0 0;
+  width:32px;
+  height:32px;
+}
+
+.playpause.play {
+  background-position:0px 40px;
+}
+
+.playpause.pause {
+  background-position:0px 0px;
+}
+
+.playpause.stop {
+  background-position:0px 80px;
+}
+

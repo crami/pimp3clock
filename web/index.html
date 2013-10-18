@@ -21,9 +21,15 @@
 <!-- Home -->
 <div data-role="page" id="page1">
     <div data-theme="a" data-role="header">
-        <h1>
-            pimp3clock
-        </h1>
+        <div id="title_grid" class="ui-grid-a">
+          <div class="ui-block-a label" class="playpause stop">
+          </div>
+          <div class="ui-block-b value">
+            <h1>
+              pimp3clock
+            </h1>
+          </div>
+        </div>
         <div id="song_grid" class="ui-grid-a">
             <div class="ui-block-a label">
             Artist
@@ -48,12 +54,12 @@
                 </span>
             </div>
             <div class="ui-block-b">
-                <span id="previous" data-role="button" data-theme="e" href="#page1">
+                <span id="previous" data-role="button" data-icon="arrow-l" data-theme="e" href="#page1">
                     Previous
                 </span>
             </div>
             <div class="ui-block-c">
-                <span id="next" data-role="button" data-theme="e" href="#page1">
+                <span id="next" data-role="button" data-icon="arrow-r" data-theme="e" href="#page1">
                     Next
                 </span>
             </div>
