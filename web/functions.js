@@ -12,6 +12,7 @@ function pimp3clock_main() {
     $.getJSON('next.json',
     {},
     function(data) {
+      songUpdate(0);
     });
   });
   
@@ -19,6 +20,7 @@ function pimp3clock_main() {
     $.getJSON('previous.json',
     {},
     function(data) {
+      songUpdate(0);
     });
   });
   
@@ -26,6 +28,7 @@ function pimp3clock_main() {
     $.getJSON('volume.json',
     {vol: $(".volume").val()},
     function(data) {
+      songUpdate(0);
     });
   });
 }
@@ -39,6 +42,9 @@ function songUpdate(interval) {
      $("#song").html(data.song.title);
      $(".volume").val(data.status.volume);
      $(".volume").slider('refresh');
-     window.setTimeout("songUpdate("+interval+")",interval);
+     $(".playpause").removeClass( "play pause stop" ).addClass(data.status.state);
+     if (interval!=0) {
+       window.setTimeout("songUpdate("+interval+")",interval);
+     }
    });
 }

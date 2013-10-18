@@ -8,20 +8,28 @@
 }
 
 .playpause {
-  background:url(image/pause_play_stop_black.png) no-repeat 0 0;
+  background:url(/images/pause_play_stop_black.png) no-repeat 0 0;
   width:32px;
   height:32px;
 }
 
 .playpause.play {
-  background-position:0px 40px;
+  background-position: -40px 0px;
 }
 
 .playpause.pause {
-  background-position:0px 0px;
+  background-position: 0px 0px;
 }
 
 .playpause.stop {
-  background-position:0px 80px;
+  background-position: -81px 0px;
 }
 
+#title_grid {
+  height: 32px !important;
+}
+
+.title_grid h1 {
+  font-size: 20px;
+  margin-top: -0px;
+}
