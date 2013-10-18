@@ -279,6 +279,7 @@ def main_loop():
            elif status['state'] == "play":
              lock.acquire()
              client.pause(1)
+             lock.release()
            elif status['state'] == "pause":
              lock.acquire()
              client.pause(0)
