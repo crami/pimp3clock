@@ -44,8 +44,9 @@ function songUpdate(interval) {
      $(".volume").val(data.status.volume);
      $(".volume").slider('refresh');
      $(".playpause").removeClass( "play pause stop" ).addClass(data.status.state);
-     if (interval!=0) {
-       window.setTimeout("songUpdate("+interval+")",interval);
-     }
+     
    });
+   if (interval!=0) {
+       window.setTimeout("songUpdate("+interval+")",interval);
+   }
 }
