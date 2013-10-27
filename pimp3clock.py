@@ -17,8 +17,8 @@ PAUSE=1
 STOP=2
 VOL=3
 
-lcd = Adafruit_CharLCDPlate()
-client = MPDClient()           # create client object
+lcd = Adafruit_CharLCDPlate()  # create LCD object
+client = MPDClient()           # create MPD client object
 
 lock = threading.Lock()
 
@@ -115,7 +115,14 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
 
 def display_lcd(title_a,st_a,vol_a):
 
-  lcd.backlight(lcd.BLUE);
+  LCDoff=lcd.OFF
+  LCDon=lcd.BLUE
+  LCDState=LCDoff
+
+  LCDOffDelay=30
+  LCDOffCountdown=LCDOffDelay
+
+  lcd.backlight(LCDon)
   lcd.clear()
   lcd.begin(16,1)
 
@@ -192,6 +199,17 @@ def display_lcd(title_a,st_a,vol_a):
         lcd.message(datetime.now().strftime('%d.%b %H %M %S\n'))
         lcd.write(st,True) # Special Characters
         lcd.message('%s' % (title[i:15+i]) )
+                
+        if ((st == PAUSE) or (st == STOP)):
+        	LCDOffCountdown=LCDOffCountdown-1
+        else:
+        	if (LCDOffCountdown==0):
+        		lcd.backlight(LCDon)
+        	LCDOffCountdown=LCDOffDelay
+        	
+        if (LCDOffCountdown < 1):
+        	lcd.backlight(LCDoff)
+        	LCDOffCountdown=0
         
         if fr==1:
           i=i+1
