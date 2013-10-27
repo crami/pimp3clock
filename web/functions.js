@@ -1,5 +1,5 @@
 function pimp3clock_main() {
-  songUpdate(4000);
+  songUpdate(1000);
   
   $("#select").click(function(){
     $.getJSON('select.json',
@@ -40,6 +40,7 @@ function songUpdate(interval) {
      $("#artist").html(data.song.artist);
      $("#album").html(data.song.album);
      $("#song").html(data.song.title);
+     $("#elapsed").html(data.status.elapsed + " / " + data.song.time);
      $(".volume").val(data.status.volume);
      $(".volume").slider('refresh');
      $(".playpause").removeClass( "play pause stop" ).addClass(data.status.state);
