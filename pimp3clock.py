@@ -17,6 +17,8 @@ PAUSE=1
 STOP=2
 VOL=3
 
+LCDon=4
+
 lcd = Adafruit_CharLCDPlate()  # create LCD object
 client = MPDClient()           # create MPD client object
 
@@ -87,7 +89,7 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
           key, value = q.split('=',1)
           if (value < 1):
             value=1
-          lock.acquire()
+          lock.acquire()          
           client.setvol(value)
           lock.release()   
                                                                    
@@ -97,7 +99,14 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
           lock.acquire()
           mpd_update()
           lock.release()
-                                                                                       
+          return
+        elif self.path.endswith("background.json"):
+        	lock.acquire()
+        	key, value = q.split('=',1)
+        	LCDon=int(value)
+        	lcd.backlight(LCDon)
+        	lock.release()
+        	return
         return
         
       else:
@@ -132,7 +141,6 @@ def mpd_update():
 def display_lcd(title_a,st_a,vol_a):
 
   LCDoff=lcd.OFF
-  LCDon=lcd.BLUE
   LCDState=LCDoff
 
   LCDOffDelay=30

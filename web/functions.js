@@ -32,6 +32,55 @@ function pimp3clock_main() {
     });
   });
   
+  $(".b-red").click(function(){
+    $.getJSON('background.json',
+    {color: 1},
+    function(data) {
+    });
+  });
+  
+  $(".b-green").click(function(){
+    $.getJSON('background.json',
+    {color: 2},
+    function(data) {
+    });
+  });
+  
+  $(".b-blue").click(function(){
+    $.getJSON('background.json',
+    {color: 4},
+    function(data) {
+    });
+  });
+  
+  $(".b-yellow").click(function(){
+    $.getJSON('background.json',
+    {color: 3},
+    function(data) {
+    });
+  });
+  
+  $(".b-teal").click(function(){
+    $.getJSON('background.json',
+    {color: 6},
+    function(data) {
+    });
+  });
+   
+  $(".b-violet").click(function(){
+    $.getJSON('background.json',
+    {color: 5},
+    function(data) {
+    });
+  });
+  
+  $(".b-white").click(function(){
+    $.getJSON('background.json',
+    {color: 7},
+    function(data) {
+    });
+  });
+  
   $(".volume").on("slidestop", function( event, ui ){
     $.getJSON('volume.json',
     {vol: $(".volume").val()},
