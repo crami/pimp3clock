@@ -84,15 +84,19 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
           self.wfile.write(json.dumps("OK"))
           return
         elif self.path.endswith("volume.json"):
-         key, value = q.split('=',1)
-         if (value < 1):
-           value=1
-         lock.acquire()
-         client.setvol(value)
-         lock.release()   
+          key, value = q.split('=',1)
+          if (value < 1):
+            value=1
+          lock.acquire()
+          client.setvol(value)
+          lock.release()   
                                                                    
-         self.wfile.write(json.dumps("OK"))
-         return
+          self.wfile.write(json.dumps("OK"))
+          return
+        elif self.path.endswith("update.json"):
+          lock.acquire()
+          mpd_update()
+          lock.release()
                                                                                        
         return
         
@@ -111,6 +115,18 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
       print "POST"
     except:
       pass
+
+def mpd_update():
+  # Load Database into current playlist
+  client.update()
+  client.clear()
+  database=client.listall("/")
+  for (i) in range(len(database)):
+    if 'file' in database[i]:
+      client.add(database[i]['file'])
+  client.random(1)
+  client.shuffle(1)
+  client.crossfade(2)
   
 
 def display_lcd(title_a,st_a,vol_a):
@@ -250,16 +266,7 @@ def main_loop():
 
   client.connect("localhost", 6600)  # connect to localhost:6600
 
-  # Load Database into current playlist
-  client.update()
-  client.clear()
-  database=client.listall("/")
-  for (i) in range(len(database)):
-    if 'file' in database[i]:
-      client.add(database[i]['file'])
-  client.random(1)
-  client.shuffle(1)
-  client.crossfade(2)
+  mpd_update()
 
   last_button=100;
 

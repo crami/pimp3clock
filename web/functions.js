@@ -24,6 +24,14 @@ function pimp3clock_main() {
     });
   });
   
+  $("#update").click(function(){
+    $.getJSON('update.json',
+    {},
+    function(data) {
+      songUpdate(0);
+    });
+  });
+  
   $(".volume").on("slidestop", function( event, ui ){
     $.getJSON('volume.json',
     {vol: $(".volume").val()},
