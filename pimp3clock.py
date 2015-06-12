@@ -8,7 +8,7 @@ from mpd import *
 import threading
 import signal
 import sys
-from os import curdir
+import os
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import json
 
@@ -30,7 +30,7 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
       if '?' in self.path:
         self.path,q = self.path.split('?', 1)
       if self.path.endswith(".js") or self.path.endswith(".css") or self.path.endswith(".png") or self.path.endswith(".gif") or self.path.endswith(".html"):
-        f = open(curdir + "/web/" + self.path)
+        f = open(os.getcwd() + "/web/" + self.path)
         self.send_response(200)
         if self.path.endswith(".js"):
           self.send_header('Content-type', 'text/javascript')
