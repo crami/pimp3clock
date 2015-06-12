@@ -23,6 +23,7 @@ lcd = Adafruit_CharLCDPlate()  # create LCD object
 client = MPDClient()           # create MPD client object
 
 lock = threading.Lock()
+home=os.path.dirname(os.path.realpath(__file__))
 
 class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
   def do_GET(self):
@@ -30,7 +31,7 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
       if '?' in self.path:
         self.path,q = self.path.split('?', 1)
       if self.path.endswith(".js") or self.path.endswith(".css") or self.path.endswith(".png") or self.path.endswith(".gif") or self.path.endswith(".html"):
-        f = open(os.path.dirname(os.path.realpath(__file__)) + "/web/" + self.path)
+        f = open(home + "/web/" + self.path)
         self.send_response(200)
         if self.path.endswith(".js"):
           self.send_header('Content-type', 'text/javascript')
@@ -117,7 +118,7 @@ class pimp3clock_HTTPRequesthandler(BaseHTTPRequestHandler):
       return
     
     except IOError:
-      self.send_error(404,'File Not Found: {0} (Home: {1})'.format(self.path,os.path.dirname(os.path.realpath(__file__))))
+      self.send_error(404,'File Not Found: {0} (Home: {1})'.format(self.path, home))
       
   def do_POST(self):
     try:
